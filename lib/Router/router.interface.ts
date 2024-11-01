@@ -1,5 +1,4 @@
-import { IHttpRequest, IHttpResponse } from "../types";
-import { TRequestHandler } from "../router";
+import { IHttpRequest, IHttpResponse, TRequestHandler } from "../types";
 import { HttpMethods } from "../http";
 
 export interface IRouter {
