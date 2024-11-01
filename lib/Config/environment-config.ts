@@ -1,5 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-require("dotenv").config();
+import dotenv from "dotenv";
+
+dotenv.config();
 
 interface IEnvironmentVariables {
   NODE_ENV: string | undefined;
@@ -11,28 +12,37 @@ interface IConfiguration {
   PORT: number;
 }
 
-const loadEnvironmentConfiguration = (): IEnvironmentVariables => {
-  return {
-    NODE_ENV: process.env.NODE_ENV,
-    PORT: process.env.PORT ? Number(process.env.PORT) : undefined,
-  };
-};
+class EnvironmentConfiguration {
+	private config: IConfiguration;
 
-const validateEnvironmentConfiguration = (
-  config: IEnvironmentVariables,
-): IConfiguration => {
-  for (const [key, value] of Object.entries(config)) {
-    if (value === undefined) {
-      throw new Error(`Missing key ${key} in config.env`);
-    }
+	constructor() {
+		this.config = this.loadEnvironmentConfiguration();
+		this.config = this.validateEnvironmentConfiguration(this.config);
+	}
+
+	private loadEnvironmentConfiguration(): IEnvironmentVariables {
+    return {
+      NODE_ENV: process.env.NODE_ENV,
+      PORT: process.env.PORT ? Number(process.env.PORT) : undefined,
+    };
   }
 
-  return config as IConfiguration;
-};
+  private validateEnvironmentConfiguration(
+    config: IEnvironmentVariables,
+  ): IConfiguration {
+    for (const [key, value] of Object.entries(config)) {
+      if (value === undefined) {
+        throw new Error(`Missing key ${key} in config.env`);
+      }
+    }
 
-const configuration: IConfiguration = loadEnvironmentConfiguration();
+    return config as IConfiguration;
+  }
 
-const validatedEnvironmentConfiguration: IConfiguration =
-  validateEnvironmentConfiguration(configuration);
+  public get configuration(): IConfiguration {
+    return this.config;
+  }
+}
 
-export { validatedEnvironmentConfiguration as environmentConfiguration };
+const envConfig = new EnvironmentConfiguration();
+export const environmentConfiguration = envConfig.configuration;
